@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7efff">
+  <title>บันทึก MTL สรุปยอดแยกรายบุคคล</title>
+  <style>
+    :root {
+      --ink:#343047; --muted:#777287; --lav:#e9ddff; --pink:#ffe2ec;
+      --mint:#ddf5ed; --blue:#e2efff; --line:#e8e2ef; --white:#fff;
+      --accent:#8063b7; --accent-dark:#654a9a;
+    }
+    * { box-sizing:border-box }
+    body {
+      margin:0; min-height:100vh; padding:28px 14px;
+      color:var(--ink); font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+      background:linear-gradient(145deg,#fff5f8 0%,#f4efff 52%,#effaf6 100%);
+    }
+    .wrap { width:min(100%,590px); margin:0 auto }
+    .card {
+      overflow:hidden; background:rgba(255,255,255,.94);
+      border:1px solid rgba(255,255,255,.9); border-radius:24px;
+      box-shadow:0 16px 48px rgba(87,67,122,.10);
+    }
+    header {
+      padding:30px 26px 25px;
+      background:linear-gradient(115deg,var(--pink),var(--lav) 62%,var(--blue));
+    }
+    .eyebrow { margin:0 0 8px; color:#765f98; font-size:12px; font-weight:700; letter-spacing:.08em }
+    h1 { margin:0; font-size:clamp(21px,5vw,27px); line-height:1.35; font-weight:800 }
+    .subtitle { margin:9px 0 0; color:#6f687d; font-size:13px }
+    form { padding:25px 26px 28px }
+    .field { margin-bottom:20px }
+    label { display:block; margin:0 0 8px; font-size:14px; font-weight:700 }
+    .required { color:#d36b91; margin-left:3px }
+    input,select {
+      display:block; width:100%; min-height:48px; padding:11px 13px;
+      border:1px solid var(--line); border-radius:12px; background:#fff;
+      color:var(--ink); font:inherit; font-size:15px; outline:none;
+      transition:border-color .15s,box-shadow .15s;
+    }
+    input:focus,select:focus { border-color:#a88bd4; box-shadow:0 0 0 3px #eee5fb }
+    input::placeholder { color:#aaa5b4 }
+    select:invalid { color:#9993a4 }
+    .hint { margin:6px 2px 0; color:var(--muted); font-size:12px }
+    button {
+      width:100%; min-height:51px; border:0; border-radius:14px;
+      background:linear-gradient(100deg,#9b80cf,#b28bc7);
+      color:#fff; font:inherit; font-size:16px; font-weight:800;
+      cursor:pointer; box-shadow:0 8px 18px rgba(137,105,184,.22);
+    }
+    button:hover { filter:brightness(.98) }
+    button:disabled { opacity:.65; cursor:wait }
+    #status { display:none; margin:16px 0 0; padding:12px 14px; border-radius:12px; font-size:14px; line-height:1.5 }
+    #status.ok { display:block; background:#e8f7ef; color:#246b4a }
+    #status.err { display:block; background:#fff0f0; color:#a33e4a }
+    footer { padding:0 26px 23px; text-align:center; color:#9993a4; font-size:11px; line-height:1.5 }
+    @media(max-width:430px) {
+      body { padding:14px 10px }
+      header { padding:25px 20px 21px }
+      form { padding:22px 20px 24px }
+      footer { padding:0 20px 20px }
+      .card { border-radius:20px }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="card">
+      <header>
+        <p class="eyebrow">MTL · DAILY RECORD</p>
+        <h1>บันทึก MTL สรุปยอดแยกรายบุคคล</h1>
+        <p class="subtitle">กรอกข้อมูลให้ครบถ้วน แล้วกดส่งข้อมูล</p>
+      </header>
+
+      <form id="mtlForm">
+        <div class="field">
+          <label for="sequence">1. ลำดับ <span class="required">*</span></label>
+          <input id="sequence" name="sequence" type="number" inputmode="numeric"
+                 step="1" min="0" placeholder="กรอกลำดับ" required>
+        </div>
+
+        <div class="field">
+          <label for="recordDate">2. วันที่/เดือน/ปี <span class="required">*</span></label>
+          <input id="recordDate" name="recordDate" type="date" required>
+        </div>
+
+        <div class="field">
+          <label for="operator">3. ผู้ปฏิบัติ <span class="required">*</span></label>
+          <select id="operator" name="operator" required>
+            <option value="" disabled selected>เลือกผู้ปฏิบัติ</option>
+            <option>821 อโนชา</option>
+            <option>822 พชร</option>
+            <option>823 ทำนุรัฐ</option>
+            <option>824 ศุภณัฐ</option>
+            <option>825 พิชชนะ</option>
+            <option>828 สรยุทธ</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="shift">4. เวร ช/บ <span class="required">*</span></label>
+          <select id="shift" name="shift" required>
+            <option value="" disabled selected>เลือกเวร</option>
+            <option>เวรเช้า</option>
+            <option>เวรบ่าย</option>
+            <option>เวร เช้า/บ่าย</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="vehicle">5. MTL คันที่ <span class="required">*</span></label>
+          <select id="vehicle" name="vehicle" required>
+            <option value="" disabled selected>เลือก MTL</option>
+            <option>MTL1 6ขถ7390</option>
+            <option>MTL2 6ขณ3996</option>
+            <option>MTL3 6ขผ6923</option>
+            <option>MTL4 5ขษ3615</option>
+            <option>MTL5 9ขอ8455</option>
+            <option>MTL6 9ขอ8460</option>
+            <option>MTL7 9ขอ8463</option>
+            <option>MTL8 9ขอ8465</option>
+            <option>MTL9 9ขอ8468</option>
+            <option>อื่นๆ</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="incident">6. พบเหตุหรือไม่ <span class="required">*</span></label>
+          <select id="incident" name="incident" required>
+            <option value="" disabled selected>เลือกคำตอบ</option>
+            <option>พบเหตุ</option>
+            <option>ไม่พบเหตุ</option>
+            <option>ว.0 ให้ยกเลิก</option>
+          </select>
+        </div>
+
+        <button id="submitBtn" type="submit">ส่งข้อมูล</button>
+        <p id="status" role="status" aria-live="polite"></p>
+      </form>
+      <footer>ข้อมูลจะถูกส่งไปยัง Google Forms ที่เชื่อมกับ Google Sheets</footer>
+    </section>
+  </main>
+
+  <iframe name="googleFormTarget" id="googleFormTarget" title="submission target"
+          style="position:absolute;width:0;height:0;border:0;visibility:hidden"></iframe>
+
+  <script>
+    /*
+     * ตั้งค่า Google Forms ก่อนเผยแพร่:
+     * 1) เปิด Google Form ต้นทาง แล้วเลือกเมนูรับลิงก์ที่กรอกข้อมูลล่วงหน้า (Get pre-filled link)
+     * 2) กรอกค่าทดสอบในแต่ละช่อง แล้วสร้างลิงก์
+     * 3) กำหนด Entry ID ทั้ง 6 รายการไว้ใน CONFIG.entries แล้ว
+     * 4) วันที่ส่งเป็น YYYY-MM-DD ตามรูปแบบ Pre-filled URL ที่ได้รับ
+     */
+    const CONFIG = {
+      formResponseUrl: "https://docs.google.com/forms/d/e/1FAIpQLSeesB9Nsv_sz4Fi8-TvtTaxGSeoMTeZVW_v7kD0yxmlpt1-zA/formResponse",
+      entries: {
+        sequence: "entry.1165002395",
+        date: "entry.7346641",
+        operator: "entry.1549335920",
+        shift: "entry.1707088121",
+        vehicle: "entry.1985154703",
+        incident: "entry.604256453"
+      }
+    };
+
+    const form = document.getElementById("mtlForm");
+    const button = document.getElementById("submitBtn");
+    const statusBox = document.getElementById("status");
+    const target = document.getElementById("googleFormTarget");
+    let pendingSubmission = false;
+    let submissionTimer;
+
+    function showStatus(message, type) {
+      statusBox.textContent = message;
+      statusBox.className = type;
+    }
+
+    function configIsReady() {
+      return Object.values(CONFIG.entries).every(value =>
+        typeof value === "string" &&
+        /^entry\.\d+$/.test(value)
+      );
+    }
+
+    target.addEventListener("load", () => {
+      if (!pendingSubmission) return;
+      pendingSubmission = false;
+      clearTimeout(submissionTimer);
+      button.disabled = false;
+      button.textContent = "ส่งข้อมูล";
+      const confirmationMessage =
+        "ส่งคำขอไปยัง Google Forms แล้ว\\n\\n" +
+        "กรุณาตรวจสอบ Google Sheets เพื่อยืนยันว่าข้อมูลถูกบันทึกเรียบร้อย";
+      showStatus(
+        "ส่งคำขอไปยัง Google Forms แล้ว กรุณาตรวจสอบ Google Sheets เพื่อยืนยันการบันทึกข้อมูล",
+        "ok"
+      );
+      window.alert(confirmationMessage);
+      form.reset();
+    });
+
+    form.addEventListener("submit", event => {
+      event.preventDefault();
+      if (!form.reportValidity()) return;
+
+      if (!configIsReady()) {
+        showStatus("ยังตั้งค่า Entry ID ไม่ครบ กรุณาใส่ entry ID ของ Google Form ทั้ง 6 ช่องใน CONFIG.entries ก่อนใช้งานจริง", "err");
+        return;
+      }
+
+      const values = new FormData(form);
+      const recordDate = String(values.get("recordDate") || "");
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(recordDate)) {
+        showStatus("กรุณาตรวจสอบวันที่อีกครั้ง", "err");
+        return;
+      }
+
+      const payload = document.createElement("form");
+      payload.method = "POST";
+      payload.action = CONFIG.formResponseUrl;
+      payload.target = "googleFormTarget";
+      payload.style.display = "none";
+
+      function add(name, value) {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = name;
+        input.value = value;
+        payload.appendChild(input);
+      }
+
+      add(CONFIG.entries.sequence, values.get("sequence"));
+      // ใช้รูปแบบวันที่เดียวกับ Pre-filled URL ที่ได้รับจาก Google Forms
+      add(CONFIG.entries.date, recordDate);
+      add(CONFIG.entries.operator, values.get("operator"));
+      add(CONFIG.entries.shift, values.get("shift"));
+      add(CONFIG.entries.vehicle, values.get("vehicle"));
+      add(CONFIG.entries.incident, values.get("incident"));
+
+      document.body.appendChild(payload);
+      pendingSubmission = true;
+      button.disabled = true;
+      button.textContent = "กำลังส่งข้อมูล…";
+      showStatus("กำลังส่งข้อมูลไปยัง Google Forms…", "ok");
+
+      submissionTimer = setTimeout(() => {
+        if (!pendingSubmission) return;
+        pendingSubmission = false;
+        button.disabled = false;
+        button.textContent = "ส่งข้อมูล";
+        showStatus("หมดเวลารอการตอบกลับจาก Google Forms ระบบยังยืนยันผลการส่งไม่ได้ กรุณาตรวจสอบ Google Sheets ก่อนกดส่งซ้ำ", "err");
+        window.alert("ยังไม่ได้รับการตอบกลับจาก Google Forms\\nกรุณาตรวจสอบ Google Sheets ก่อนส่งข้อมูลซ้ำ");
+      }, 15000);
+
+      payload.submit();
+      payload.remove();
+    });
+  </script>
+</body>
+</html>
